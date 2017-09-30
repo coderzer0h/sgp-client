@@ -29,6 +29,9 @@ public class Main extends SimpleApplication {
         geom.setMaterial(mat);
 
         rootNode.attachChild(geom);
+        
+        NetworkStack ns = new NetworkStack();
+        ns.run();
     }
 
     @Override
