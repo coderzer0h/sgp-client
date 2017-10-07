@@ -1,5 +1,6 @@
 package com.coderzer0h.sgp;
 
+import com.coderzer0h.sgp.network.Client;
 import com.jme3.app.SimpleApplication;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
@@ -30,8 +31,12 @@ public class Main extends SimpleApplication {
 
         rootNode.attachChild(geom);
         
-        NetworkStack ns = new NetworkStack();
-        ns.run();
+        try {
+        Client ns = new Client();
+        ns.Connect();
+        } catch (Exception ex) {
+            
+        }
     }
 
     @Override
