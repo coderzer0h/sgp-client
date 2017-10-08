@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import org.msgpack.core.MessageBufferPacker;
@@ -22,7 +23,12 @@ import org.msgpack.core.MessagePacker;
 public class Client{
     
     private DatagramSocket datagramSocket;
+    private DatagramSocket serverSocket;
     private InetAddress inetAddress;
+    private InetAddress localAddress;    
+    
+    private final Object stateLock = new Object();
+    private ClientState state = ClientState.IDLE;
     
  
     public static class Message {
@@ -31,12 +37,45 @@ public class Client{
         public String message;
     }
     
+    private Runnable listener;
+    
     public Client() throws ClientCreateException {
+        
+        this.SetState(ClientState.IDLE);
+        
         try {
         datagramSocket = new DatagramSocket();
+        serverSocket = new DatagramSocket(41337);
         inetAddress = InetAddress.getByName("localhost");
+        
         } catch(Exception ex) {
             throw new ClientCreateException();
+        }
+        
+        listener = new Runnable() {
+            @Override
+            public void run() {
+                DatagramSocket socket = Client.this.serverSocket;
+                while(Client.this.GetState() != ClientState.SHUTDOWN) {
+                   
+                    
+                }
+            }  
+        };   
+   
+    }
+    
+    public final ClientState GetState() {
+        synchronized (stateLock) {
+            ClientState temp;
+            temp = state;
+            return state;
+        }
+    }
+    
+    public final void SetState(ClientState state) {
+        synchronized (stateLock) {
+            this.state = state;
         }
     }
     
